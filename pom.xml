@@ -3,14 +3,15 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>my.unifi.eset</groupId>
     <artifactId>keycloak-pii-data-encryption</artifactId>
-    <version>2.1</version>
+    <version>${revision}</version>
     <packaging>jar</packaging>
     <properties>
+        <revision>v1.0.0</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>17</maven.compiler.release>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <keycloak.version>25.0.1</keycloak.version>
+        <keycloak.version>${keycloak.version}</keycloak.version>
         <netbeans.hint.jdkPlatform>JDK_17</netbeans.hint.jdkPlatform>
         <junit.jupiter.version>5.9.2</junit.jupiter.version>
     </properties>
