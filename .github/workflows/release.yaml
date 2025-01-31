@@ -12,6 +12,9 @@ jobs:
   build-and-release:
     runs-on: ubuntu-24.04
     steps:
+      - name: Inject slug/short variables
+        uses: rlespinasse/github-slug-action@v5
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -25,7 +28,8 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y git
 
       - name: Build with Maven
-        run: mvn clean package -Dkeycloak.version=$KEYCLOAK_VERSION -Drevision=${{  github.ref_name }}
+        run: |
+          mvn clean package -Dkeycloak.version=$KEYCLOAK_VERSION -Drevision=${GITHUB_REF_SLUG:1}
         env:
           KEYCLOAK_VERSION: ${{ env.KEYCLOAK_VERSION }}
 
