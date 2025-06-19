@@ -18,9 +18,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Build and Test with Maven
-        run: mvn clean compile test -Dkeycloak.version=$KEYCLOAK_VERSION
-        env:
-          KEYCLOAK_VERSION: ${{ env.KEYCLOAK_VERSION }}
+        run: mvn clean compile test -Dkeycloak.version=26.2.5
 
   build-and-release:
     runs-on: ubuntu-24.04
@@ -42,9 +40,7 @@ jobs:
 
       - name: Build with Maven
         run: |
-          mvn clean package -Dkeycloak.version=$KEYCLOAK_VERSION -Drevision=${GITHUB_REF_SLUG:1}
-        env:
-          KEYCLOAK_VERSION: ${{ env.KEYCLOAK_VERSION }}
+          mvn clean package -Dkeycloak.version=26.2.5 -Drevision=${GITHUB_REF_SLUG:1}
 
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v4
