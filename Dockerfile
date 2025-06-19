@@ -1,4 +1,4 @@
-ARG KEYCLOAK_VERSION=26.0.6
+ARG KEYCLOAK_VERSION=26.2.5
 
 ### Build provider keycloak-pii-data-encryption
 
@@ -6,9 +6,9 @@ FROM maven:3-openjdk-17-slim AS provider-pii
 ARG KEYCLOAK_VERSION
 WORKDIR /app
 COPY pom.xml .
-RUN mvn test verify -Dkeycloak.version=$KEYCLOAK_VERSION
+RUN mvn verify -B -Dkeycloak.version=$KEYCLOAK_VERSION
 COPY src ./src
-RUN mvn package -o -Dmaven.test.skip -Dkeycloak.version=$KEYCLOAK_VERSION
+RUN mvn test package -B -Dkeycloak.version=$KEYCLOAK_VERSION
 
 ### Build customized Keycloak
 
