@@ -1,15 +1,27 @@
-name: Build and Release JAR
+name: CI/CD Pipeline
 
 on:
   push:
-    tags:
-      - 'v*'
-
-env:
-  KEYCLOAK_VERSION: 26.2.0
 
 jobs:
+  build-and-test:
+    runs-on: ubuntu-24.04
+    if: "!startsWith(github.ref, 'refs/tags/')"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build and Test with Maven
+        run: mvn clean compile test -Dkeycloak.version=26.2.5
+
   build-and-release:
+    if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-24.04
     steps:
       - name: Inject slug/short variables
@@ -29,9 +41,7 @@ jobs:
 
       - name: Build with Maven
         run: |
-          mvn clean package -Dkeycloak.version=$KEYCLOAK_VERSION -Drevision=${GITHUB_REF_SLUG:1}
-        env:
-          KEYCLOAK_VERSION: ${{ env.KEYCLOAK_VERSION }}
+          mvn clean package -Dkeycloak.version=26.2.5 -Drevision=${GITHUB_REF_SLUG:1}
 
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v4
@@ -41,7 +51,6 @@ jobs:
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
         with:
           files: target/*.jar
         env:
