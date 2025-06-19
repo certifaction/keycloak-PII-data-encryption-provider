@@ -1,14 +1,27 @@
-name: Build and Release JAR
+name: CI/CD Pipeline
 
 on:
   push:
-    tags:
-      - 'v*'
-
-env:
-  KEYCLOAK_VERSION: 26.2.0
 
 jobs:
+  build-and-test:
+    runs-on: ubuntu-24.04
+    if: "!startsWith(github.ref, 'refs/tags/')"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build and Test with Maven
+        run: mvn clean compile test -Dkeycloak.version=$KEYCLOAK_VERSION
+        env:
+          KEYCLOAK_VERSION: ${{ env.KEYCLOAK_VERSION }}
+
   build-and-release:
     runs-on: ubuntu-24.04
     steps:
