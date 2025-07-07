@@ -23,6 +23,9 @@ jobs:
   build-and-release:
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-24.04
+    # capture the tag (e.g. "1.0.0") into an env var
+    env:
+      RELEASE_NAME: ${{ github.ref_name }}
     steps:
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v5
@@ -40,18 +43,23 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y git
 
       - name: Build with Maven
+        run: mvn clean package -Dkeycloak.version=26.2.5
+
+      - name: Rename JAR to include release name
         run: |
-          mvn clean package -Dkeycloak.version=26.2.5 -Drevision=${GITHUB_REF_SLUG:1}
+          # assumes your built jar is the only .jar in target/
+          ORIGINAL_JAR=$(ls target/*.jar)
+          mv "$ORIGINAL_JAR" "target/keycloak-pii-data-encryption-${RELEASE_NAME}.jar"
 
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v4
         with:
           name: pii-encryption-provider
-          path: target/*.jar
+          path: target/keycloak-pii-data-encryption-${RELEASE_NAME}.jar
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: target/*.jar
+          files: target/keycloak-pii-data-encryption-${RELEASE_NAME}.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
